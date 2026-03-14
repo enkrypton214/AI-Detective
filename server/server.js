@@ -1,3 +1,5 @@
+require("dotenv").config();
+
 const http = require("http"); //http module
 const { json } = require("stream/consumers");
 const handleAsk = require("./routes/ask");

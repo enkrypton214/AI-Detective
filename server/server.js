@@ -1,5 +1,6 @@
 const http = require("http"); //http module
 const { json } = require("stream/consumers");
+const handleAsk = require("./routes/ask");
 
 const port = 3000; //assigning port number
 const server = http.createServer((req, res) => {
@@ -12,20 +13,7 @@ const server = http.createServer((req, res) => {
 
 	// API EndPoint
 	if (req.url === "/ask" && req.method === "POST") {
-		let body = "";
-		//Recieve data
-		req.on("data", (chunk) => {
-			body += chunk.toString();
-		});
-		req.on("end", () => {
-			const data = JSON.parse(body);
-			const question = data.question;
-
-			const response = { answer: "You asked: " + question };
-
-			res.writeHead(200, { "content-type": "application/json" });
-			res.end(JSON.stringify(response));
-		});
+		handleAsk(req, res);
 		return;
 	}
 

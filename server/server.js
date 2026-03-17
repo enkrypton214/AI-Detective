@@ -1,31 +1,52 @@
+// server.js
 require("dotenv").config();
-
-const http = require("http"); //http module
-const { json } = require("stream/consumers");
+const { init } = require("./utils/embed");
+const { initVectorStore } = require("./utils/chromaStore");
+const loadData = require("./utils/ingest");
+const http = require("http");
 const handleAsk = require("./routes/ask");
 
-const port = 3000; //assigning port number
+const port = 3000;
+
 const server = http.createServer((req, res) => {
-	//Home
+	// CORS headers
+	if (req.method === "OPTIONS") {
+		res.writeHead(200, {
+			"Access-Control-Allow-Origin": "*",
+			"Access-Control-Allow-Methods": "POST, GET, OPTIONS",
+			"Access-Control-Allow-Headers": "Content-Type",
+		});
+		res.end();
+		return;
+	}
+
+	res.setHeader("Access-Control-Allow-Origin", "*");
+	res.setHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS");
+	res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+
+	// Home route
 	if (req.url === "/" && req.method === "GET") {
-		res.writeHead(200, { "content-type": "text/plain" });
+		res.writeHead(200, { "Content-Type": "text/plain" });
 		res.end("AI Detective Server Running");
 		return;
 	}
 
-	// API EndPoint
+	// /ask endpoint
 	if (req.url === "/ask" && req.method === "POST") {
 		handleAsk(req, res);
 		return;
 	}
 
-	//Error Catch
-	res.writeHead(404, { "content-type": "text/plain" });
+	// 404 fallback
+	res.writeHead(404, { "Content-Type": "text/plain" });
 	res.end("Route not found");
-}); // create server and check if it exists or not
-//model = client(browser)=> Req => server => Res => client(Browser)
-//process node starts server.js => server.listen starts listening => browser req => create server Runs => check URL => send Response
+});
 
-server.listen(port, () => {
-	console.log(`Server Running on port ${port}`);
-}); //
+async function startServer() {
+	await init(); // initialize transformer/embeddings
+	await initVectorStore(); // initialize Chroma vector store
+	await loadData(); // ingest your clues
+}
+
+server.listen(port, () => console.log(`Server Running on port ${port}`));
+startServer();

@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<title>AI Detective</title>
+		<style>
+			body {
+				font-family: sans-serif;
+				margin: 2rem;
+			}
+			input,
+			button {
+				font-size: 1rem;
+				padding: 0.5rem;
+				margin: 0.5rem 0;
+			}
+			.conclusion-container {
+				margin-top: 2rem;
+				border: 2px solid #444;
+				padding: 1rem;
+				border-radius: 8px;
+				background: #fdf6e3;
+				max-width: 600px;
+			}
+		</style>
+	</head>
+	<body>
+		<h1>AI Detective</h1>
+		<input
+			type="text"
+			id="question"
+			placeholder="Ask a question..."
+			size="50"
+		/>
+		<button onclick="askQuestion()">Ask</button>
+
+		<div
+			class="conclusion-container"
+			id="conclusion"
+		>
+			Ill help you out. Just ask me a question.
+		</div>
+
+		<script>
+			async function askQuestion() {
+				const question = document.getElementById("question").value;
+				const container = document.getElementById("conclusion");
+				container.textContent = "Thinking...";
+
+				try {
+					const response = await fetch("http://localhost:3000/ask", {
+						method: "POST",
+						headers: { "Content-Type": "application/json" },
+						body: JSON.stringify({ question }),
+					});
+
+					const data = await response.json();
+
+					container.textContent = data.answer;
+				} catch (err) {
+					container.textContent = "Error: " + err.message;
+					console.error(err);
+				}
+			}
+		</script>
+	</body>
+</html>

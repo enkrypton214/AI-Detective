@@ -1,0 +1,19 @@
+Raw Clues
+│
+▼
+Embedding Model (MiniLM)
+│
+▼
+Vector Database (Chroma)
+│
+▼
+Backend API (Node.js)
+│
+▼
+Retrieve Clues
+│
+▼
+LLM (Mistral via Ollama)
+│
+▼
+Frontend (Vite)
